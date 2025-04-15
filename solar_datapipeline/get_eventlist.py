@@ -5,11 +5,15 @@ base_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Mon
 def get_txt(url: str, save_folder: str) -> None:
     try:
         text_file = url.split("/")[-1]
+        get_year = text_file.split("_")[1]
         print(f"Downloading event list: {text_file}")
         df = pd.read_table(url, comment= "#", names= headers, sep='\t', on_bad_lines='skip', encoding="ISO-8859-1").dropna()
         
-        save_path = os.path.join(save_folder, text_file)
-        
+        save_folder = os.path.join(save_folder, get_year)
+        if not os.path.exists(save_folder):
+            os.makedirs(save_folder)
+            print(f"{save_folder} created")
+        save_path: str = os.path.join(save_folder, text_file)
         df.to_csv(save_path)
     except Exception as e:
         print(f"Error: {e}")
@@ -27,9 +31,10 @@ def generate_urls(years: list[int], months: list[int], base_url: str):
             yield f"{base_url}{year}/e-CALLISTO_{year}_{month:02d}.txt"
 
 save_folder: str = f"{os.getcwd()}\solar_data_folder\events_list"
-test_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Monstein/2024/e-CALLISTO_2024_10.txt"
+if not os.path.exists(save_folder):
+    os.makedirs(save_folder)
+
 years: list[int] = [2024]
 months: list[int] = list(range(1,13))
-
 
 get_multiple_txt(save_folder, years, months, base_url)
