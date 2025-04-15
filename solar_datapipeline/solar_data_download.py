@@ -1,5 +1,6 @@
 import requests
 import os
+import pandas as pd
 
 def download_file(url, save_path):
     try:
@@ -23,6 +24,8 @@ def download_multiple_files(urls, save_path):
             download_file(url, save_path)
         except Exception as e:
             print(f"Error downloading {url}: {e}")
+def url_generator(dataframe, Types):
+    pass
 
 if __name__ == "__main__":
     cwd = os.getcwd()
