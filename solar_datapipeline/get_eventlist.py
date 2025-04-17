@@ -1,11 +1,11 @@
 import pandas as pd
 import os
-import adjust_dataframe
+import manipulate_dataframe 
 headers = ("Date","Time","Type","Stations")
 base_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Monstein/"
 import numpy as np
 years: list[int] = [2024]
-months: list[int] = list(range(12,13))
+months: list[int] = list(range(1,13))
 
 def get_txt(url: str, save_folder: str) -> None:
     """
@@ -24,7 +24,7 @@ def get_txt(url: str, save_folder: str) -> None:
         df = pd.read_table(url, comment= "#", names= headers, sep='\t', on_bad_lines='skip', encoding="ISO-8859-1").dropna() 
         #Explantion of the above code
         ##The data is tabular, with comments declared using "#" however some don't and so show up as rows with NaN in rows hence I drop any rows with NaN
-        adjust_dataframe.create_start_time_column(df) # Creates new column - when finished - that can be used for look up
+        #manipulate_dataframe.create_start_time_column(df) # Creates new column - when finished - that can be used for look up
         save_folder = os.path.join(save_folder, get_year)
         if not os.path.exists(save_folder):
             #Here just incase directory is not set up
