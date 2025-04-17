@@ -15,19 +15,29 @@ if __name__ == "__main__":
     df_grouped_type = pd.DataFrame(df.groupby("Type").count()['Stations'].sort_values(ascending=False))
     df_confirmed_type = df_grouped_type.loc[df_grouped_type.index.isin(cat)]
     df_unconfirmed_type = df_grouped_type[df_grouped_type.index.str.contains("\?")]
-    fig, ax = plt.subplots(1,2)
-    sns.barplot(ax=ax[0], data=df_confirmed_type, x="Type", y = "Stations")
-    sns.barplot(ax=ax[1], data=df_unconfirmed_type, x="Type", y = "Stations")
+    ax = plt.figure(layout="constrained").subplot_mosaic(
+    """
+    AA
+    BC
+    """
+)
+    sns.barplot(ax=ax["A"], data=df_grouped_type, x="Type", y = "Stations")
+    sns.barplot(ax=ax["B"], data=df_confirmed_type, x="Type", y = "Stations")
+    sns.barplot(ax=ax["C"], data=df_unconfirmed_type, x="Type", y = "Stations")
+    ax["A"].bar_label(ax["A"].containers[0], fontsize=10)
+    ax["A"].set_title("Observations for 2024")
+    ax["A"].set_ylabel("Total Observations")
+    ax["A"].grid()
 
-    ax[0].bar_label(ax[0].containers[0], fontsize=10)
-    ax[0].set_title("Confirmed Observations for 2024")
-    ax[0].set_ylabel("Total Observations")
-    ax[0].grid()
+    ax["B"].bar_label(ax["B"].containers[0], fontsize=10)
+    ax["B"].set_title("Confirmed Observations for 2024")
+    ax["B"].set_ylabel("Total Observations")
+    ax["B"].grid()
 
-    ax[1].bar_label(ax[1].containers[0], fontsize=10)
-    ax[1].set_title("Unconfirmed Observations for 2024")
-    ax[1].set_ylabel("Total Observations")
-    ax[1].grid()
+    ax["C"].bar_label(ax["C"].containers[0], fontsize=10)
+    ax["C"].set_title("Unconfirmed Observations for 2024")
+    ax["C"].set_ylabel("Total Observations")
+    ax["C"].grid()
     
     sns.despine(trim=True)
     plt.xticks(rotation=90)
