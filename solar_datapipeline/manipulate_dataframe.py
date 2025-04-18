@@ -22,7 +22,7 @@ def time_binning(time_series: pd.Series, bin_interval: int = 15):
 
     print(time_series)
     
-def create_time_bins_optimized(step_minutes=15) -> list[int]: #Updated gemnini code
+def create_time_bins(step_minutes=15) -> list[int]: #Updated gemnini code
     """
     Creates time bins from 0000 to 2400. in increments of step_minutes.
 
@@ -47,6 +47,5 @@ def create_time_bins_optimized(step_minutes=15) -> list[int]: #Updated gemnini c
 
     return time_bins
 
-# Create time bins in 15-minute steps
-fifteen_minute_bins = create_time_bins_optimized(step_minutes=15)
+fifteen_minute_bins = create_time_bins(step_minutes=15)
 #print(fifteen_minute_bins)
