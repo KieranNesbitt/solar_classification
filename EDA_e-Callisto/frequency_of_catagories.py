@@ -8,7 +8,7 @@ sns.set_context("paper")
 sns.set_style("ticks")
 
 if __name__ == "__main__":
-    year = 2023
+    year = 2024
     cat = ("CTM", "II", "III", "IV", "V", "U", "J","VI","VII")
     path = rf"{os.getcwd()}\solar_data_folder\events_list\{year}"
     file_paths = os.path.join(path, "*.txt")
@@ -22,10 +22,10 @@ if __name__ == "__main__":
     AA
     BC
     """
-)
-    sns.barplot(ax=ax["A"], data=df_confirmed_type, x="Type", y = "Stations")
-    sns.barplot(ax=ax["B"], data=df_unconfirmed_type, x="Type", y = "Stations")
-    sns.barplot(ax=ax["C"], data=df_other_type, x="Type", y = "Stations")
+)   
+    sns.barplot(ax=ax["A"], data=df_confirmed_type, x=df_confirmed_type.index, y = "Stations")
+    sns.barplot(ax=ax["B"], data=df_unconfirmed_type, x=df_unconfirmed_type.index, y = "Stations")
+    sns.barplot(ax=ax["C"], data=df_other_type, x=df_other_type.index , y = "Stations")
     ax["A"].bar_label(ax["A"].containers[0], fontsize=10)
     ax["A"].set_title(f"Confirmed Observations for {year}")
     ax["A"].set_ylabel("Total Observations")
