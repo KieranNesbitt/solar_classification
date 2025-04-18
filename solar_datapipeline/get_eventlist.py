@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-import manipulate_dataframe 
-headers = ("Date","Time","Type","Stations")
+#import manipulate_dataframe 
+headers: list[str] = ("Date","Time","Type","Stations")
 base_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Monstein/"
 import numpy as np
 years: list[int] = [2024]
@@ -18,8 +18,8 @@ def get_txt(url: str, save_folder: str) -> None:
 
     """
     try:
-        text_file = url.split("/")[-1]
-        get_year = text_file.split("_")[1]
+        text_file: str = url.split("/")[-1]
+        get_year: str = text_file.split("_")[1]
         print(f"Downloading event list: {text_file}")
         df = pd.read_table(url, comment= "#", names= headers, sep='\t', on_bad_lines='skip', encoding="ISO-8859-1").dropna() 
         #Explantion of the above code
@@ -60,8 +60,8 @@ def generate_urls(years: list[int], months: list[int], base_url: str):
     for year in years:
         for month in months:
             yield f"{base_url}{year}/e-CALLISTO_{year}_{month:02d}.txt"
-
-save_folder: str = f"{os.getcwd()}\solar_data_folder\events_list"
-if not os.path.exists(save_folder):
-    os.makedirs(save_folder)
-get_multiple_txt(save_folder, years, months, base_url)
+if __name__ == "__main__":
+    save_folder: str = f"{os.getcwd()}\solar_data_folder\events_list"
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+    get_multiple_txt(save_folder, years, months, base_url)

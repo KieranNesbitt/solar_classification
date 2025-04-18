@@ -50,4 +50,4 @@ def create_time_bins_optimized(step_minutes=15) -> list[int]:
 
 # Create time bins in 15-minute steps
 fifteen_minute_bins = create_time_bins_optimized(step_minutes=15)
-print(fifteen_minute_bins)
+#print(fifteen_minute_bins)
