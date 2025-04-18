@@ -8,8 +8,9 @@ sns.set_context("paper")
 sns.set_style("ticks")
 
 if __name__ == "__main__":
+    year = 2023
     cat = ("CTM", "II", "III", "IV", "V", "U", "J","VI","VII")
-    path = rf"{os.getcwd()}\solar_data_folder\events_list\2024"
+    path = rf"{os.getcwd()}\solar_data_folder\events_list\{year}"
     file_paths = os.path.join(path, "*.txt")
     df = pd.concat(map(pd.read_csv, glob.glob(file_paths)))
     df_grouped_type = pd.DataFrame(df.groupby("Type").count()['Stations'].sort_values(ascending=False))
@@ -26,12 +27,12 @@ if __name__ == "__main__":
     sns.barplot(ax=ax["B"], data=df_unconfirmed_type, x="Type", y = "Stations")
     sns.barplot(ax=ax["C"], data=df_other_type, x="Type", y = "Stations")
     ax["A"].bar_label(ax["A"].containers[0], fontsize=10)
-    ax["A"].set_title("Confirmed Observations for 2024")
+    ax["A"].set_title(f"Confirmed Observations for {year}")
     ax["A"].set_ylabel("Total Observations")
     ax["A"].grid()
 
     ax["B"].bar_label(ax["B"].containers[0], fontsize=10)
-    ax["B"].set_title("Unconfirmed Observations for 2024")
+    ax["B"].set_title(f"Unconfirmed Observations for {year}")
     ax["B"].set_ylabel("Total Observations")
     ax["B"].grid()
 

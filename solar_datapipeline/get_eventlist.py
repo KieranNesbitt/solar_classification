@@ -4,7 +4,7 @@ import os
 headers: list[str] = ("Date","Time","Type","Stations")
 base_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Monstein/"
 import numpy as np
-years: list[int] = [2024]
+years: list[int] = [2023]
 months: list[int] = list(range(1,13))
 
 def get_txt(url: str, save_folder: str) -> None:
