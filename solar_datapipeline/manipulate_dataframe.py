@@ -26,9 +26,15 @@ def time_code_to_bins(time_code: str) -> list[str]: #     Needed when using the 
     Returns:
         list: A list of 'HHMM00' strings representing the 15-minute bins.
     """
+    replacement_dict = {".":":", ";":":", "+":""}
+    replacements = str.maketrans(replacement_dict)
+    time_code= time_code.translate(replacements)
     start_time_str, end_time_str = time_code.split('-')
+    start_time_str = start_time_str.replace(".",":")
+    end_time_str = end_time_str.replace(".", ":")
     start_hours, start_minutes = map(int, start_time_str.split(':'))
     end_hours, end_minutes = map(int, end_time_str.split(':'))
+
 
     start_total_minutes = (start_hours * 60) + start_minutes
     end_total_minutes = (end_hours * 60) + end_minutes
