@@ -32,9 +32,10 @@ def time_code_to_bins(time_code: str) -> list[str]: #     Needed when using the 
     replacement_dict = {".":":", ";":":", "+":"", "_": ":"}
     replacements = str.maketrans(replacement_dict)
     time_code= time_code.translate(replacements)
+    if time_code.count(":")>2:
+        return []
     start_time_str, end_time_str = time_code.split('-')
-    start_time_str = start_time_str.replace(".",":")
-    end_time_str = end_time_str.replace(".", ":")
+
     start_hours, start_minutes = map(mapper_function_converter, start_time_str.split(':'))
     end_hours, end_minutes = map(mapper_function_converter, end_time_str.split(':'))
 
@@ -53,6 +54,6 @@ def time_code_to_bins(time_code: str) -> list[str]: #     Needed when using the 
         current_bin_minute += 15
     return bins
 #Test code
-"""single_time_code = "00:01-00:01"
+"""single_time_code = "00.01.00:01"
 bin_results = time_code_to_bins(single_time_code)
 print(f"Time code '{single_time_code}' falls into bins '{bin_results}'")"""
