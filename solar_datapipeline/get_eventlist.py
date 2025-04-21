@@ -25,6 +25,7 @@ def get_txt(url: str, save_folder: str) -> None:
         #Explantion of the above code
         ##The data is tabular, with comments declared using "#" however some don't and so show up as rows with NaN in rows hence I drop any rows with NaN
         #manipulate_dataframe.create_start_time_column(df) # Creates new column - when finished - that can be used for look up
+        
         save_folder = os.path.join(save_folder, get_year)
         if not os.path.exists(save_folder):
             #Here just incase directory is not set up
