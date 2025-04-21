@@ -5,8 +5,8 @@ from manipulate_dataframe import time_code_to_bins
 headers: list[str] = ("Date","Time","Type","Stations")
 base_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Monstein/"
 import numpy as np
-years: list[int] = [2024]
-months: list[int] = list(range(2,3))
+years: list[int] = [2023]
+months: list[int] = list(range(3,4))
 
 def get_txt(url: str, save_folder: str) -> None:
     """
@@ -26,7 +26,7 @@ def get_txt(url: str, save_folder: str) -> None:
         #Explantion of the above code
         ##The data is tabular, with comments declared using "#" however some don't and so show up as rows with NaN in rows hence I drop any rows with NaN
         df["Time_code"] = df["Time"].apply(time_code_to_bins)
-
+        print(df["Time_code"])
         save_folder = os.path.join(save_folder, get_year)
         if not os.path.exists(save_folder):
             #Here just incase directory is not set up

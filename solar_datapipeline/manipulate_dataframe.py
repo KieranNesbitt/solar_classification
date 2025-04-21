@@ -11,10 +11,12 @@ def playing_with_df(df: pd.DataFrame) -> None:
     print(start_and_end_split[df["Type"] == "CTM"].index.to_list())
 
 
-def time_binning(time_series: pd.Series, bin_interval: int = 15):
+def mapper_function_converter(time_code: list[str]) -> list[int]:
+    try:
+         return int(time_code)
+    except:
+        return 0
 
-    print(time_series)
-    
 def time_code_to_bins(time_code: str) -> list[str]: #     Needed when using the events list to act like a look up table to grab the specific data for the radio burst type
 
     """
@@ -26,15 +28,15 @@ def time_code_to_bins(time_code: str) -> list[str]: #     Needed when using the 
     Returns:
         list: A list of 'HHMM00' strings representing the 15-minute bins.
     """
-    replacement_dict = {".":":", ";":":", "+":""}
+    #Weird anomalies such as . instead of : need to removed, using translate and a dictionary should help
+    replacement_dict = {".":":", ";":":", "+":"", "_": ":"}
     replacements = str.maketrans(replacement_dict)
     time_code= time_code.translate(replacements)
     start_time_str, end_time_str = time_code.split('-')
     start_time_str = start_time_str.replace(".",":")
     end_time_str = end_time_str.replace(".", ":")
-    start_hours, start_minutes = map(int, start_time_str.split(':'))
-    end_hours, end_minutes = map(int, end_time_str.split(':'))
-
+    start_hours, start_minutes = map(mapper_function_converter, start_time_str.split(':'))
+    end_hours, end_minutes = map(mapper_function_converter, end_time_str.split(':'))
 
     start_total_minutes = (start_hours * 60) + start_minutes
     end_total_minutes = (end_hours * 60) + end_minutes
@@ -51,6 +53,6 @@ def time_code_to_bins(time_code: str) -> list[str]: #     Needed when using the 
         current_bin_minute += 15
     return bins
 #Test code
-"""single_time_code = "12:34-13:05"
+"""single_time_code = "00:01-00:01"
 bin_results = time_code_to_bins(single_time_code)
 print(f"Time code '{single_time_code}' falls into bins '{bin_results}'")"""
