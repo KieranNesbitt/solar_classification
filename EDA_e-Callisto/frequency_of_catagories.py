@@ -9,7 +9,7 @@ sns.set_style("ticks")
 
 if __name__ == "__main__":
     year = 2023
-    cat = ("CTM", "II", "III", "IV", "V","VI","VII", "U", "J")
+    cat = ("CTM", "II", "III", "IV", "V","VI","VII", "U", "J", "DCIM")
     path = rf"{os.getcwd()}\solar_data_folder\events_list\{year}"
     file_paths = os.path.join(path, "*.txt")
     df = pd.concat(map(pd.read_csv, glob.glob(file_paths)))
