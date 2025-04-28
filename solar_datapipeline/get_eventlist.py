@@ -26,7 +26,6 @@ def get_txt(url: str, save_folder: str) -> None:
         df = df.drop(df[df["Type"]== "REM"].index)
         #Explantion of the above code
         ##The data is tabular, with comments declared using "#" however some don't and so show up as rows with NaN in rows hence I drop any rows with NaN
-
         df["Time_code"] = df["Time"].apply(time_code_to_bins)
         print(df["Time_code"][5][0])
         save_folder = os.path.join(save_folder, get_year)
