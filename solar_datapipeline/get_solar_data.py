@@ -2,6 +2,13 @@ import requests
 import os
 import pandas as pd
 
+def convert_stations(stations: str) -> list[str]:
+    """
+    Converts the stations string to a list of station names.
+    """
+    # Split the string by commas and strip whitespace
+    return [station.strip() for station in stations.split(",")]
+
 def download_file(url: str, save_path: str):
     try:
 
@@ -25,8 +32,8 @@ def get_event_list(year: int, month: int, cwd: str) -> pd.DataFrame:
 
     try:
         df: pd.DataFrame = pd.read_csv(file_path, comment="#", sep=',', on_bad_lines='skip', encoding="ISO-8859-1",
-                         usecols=['Date', 'Type', "Stations", "Time_code"], converters={'Time_code': pd.eval})
-        print(df[df["Type"]== "CTM"]["Time_code"])
+                         usecols=['Date', 'Type', "Stations", "Time_code"], converters={'Time_code': pd.eval, "Stations": convert_stations})
+        
         return df
     except Exception as e:
         print(f"Error fetching event list: {e}")
