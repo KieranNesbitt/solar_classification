@@ -22,7 +22,7 @@ def download_file(url: str, save_path: str):
     except Exception as e:
         print(f"Error: {e}")
 
-"https://soleil.i4ds.ch/solarradio/qkl/2024/08/04/EGYPT-SpaceAgency_20240804_121501_01.fit.gz.png"
+
 
 def get_event_list(year: int, month: int, cwd: str) -> pd.DataFrame:
     """
@@ -48,6 +48,7 @@ def download_multiple_files(urls:str, save_path:str) -> None:
             download_file(url, save_path)
         except Exception as e:
             print(f"Error downloading {url}: {e}")
+#Example URL: "https://soleil.i4ds.ch/solarradio/qkl/2024/08/04/EGYPT-SpaceAgency_20240804_121501_01.fit.gz.png"
 def generate_urls(date_code: int, stations: str, time_code: str) -> list[str]:
     """
     Generates URLs for the given year and month.
@@ -55,7 +56,7 @@ def generate_urls(date_code: int, stations: str, time_code: str) -> list[str]:
     #date_code: "YYYYMMDD" format
     year, month, day = date_code // 10000, (date_code // 100) % 100, date_code % 100
     urls: list[str] = []
-
+    print(f"Generating URLs for {year}-{month:02d}-{day:02d} for stations {stations} and time code {time_code}")
     
     return urls
 if __name__ == "__main__":
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     month:int = 1
     if os.path.exists(f"{cwd}\solar_data_folder"):
        get_event_list(year, month, cwd)
-       generate_urls(20241224, "EGYPT-SpaceAgency", "004500")
+       generate_urls(20241224, "EGYPT-SpaceAgency", "044500")
     else:
         os.makedirs(f"{cwd}\solar_data_folder\solar_data")
         print(f"{cwd}\solar_data_folder\solar_data created")
