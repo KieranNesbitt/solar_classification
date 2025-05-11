@@ -1,11 +1,12 @@
 import pandas as pd
 import os
+from manipulate_dataframe import time_code_to_bins
 #import manipulate_dataframe 
 headers: list[str] = ("Date","Time","Type","Stations")
 base_url: str = "https://soleil.i4ds.ch/solarradio/data/BurstLists/2010-yyyy_Monstein/"
 import numpy as np
-years: list[int] = [2023]
-months: list[int] = list(range(1,13))
+years: list[int] = [2024]
+months: list[int] = list(range(12,13))
 
 def get_txt(url: str, save_folder: str) -> None:
     """
@@ -21,10 +22,12 @@ def get_txt(url: str, save_folder: str) -> None:
         text_file: str = url.split("/")[-1]
         get_year: str = text_file.split("_")[1]
         print(f"Downloading event list: {text_file}")
-        df = pd.read_table(url, comment= "#", names= headers, sep='\t', on_bad_lines='skip', encoding="ISO-8859-1").dropna() 
+        df = pd.read_table(url, comment= "#", names= headers, sep='\t', on_bad_lines='skip', encoding="ISO-8859-1").dropna()
+        df = df.drop(df[df["Type"]== "REM"].index)
         #Explantion of the above code
         ##The data is tabular, with comments declared using "#" however some don't and so show up as rows with NaN in rows hence I drop any rows with NaN
-        #manipulate_dataframe.create_start_time_column(df) # Creates new column - when finished - that can be used for look up
+        df["Time_code"] = df["Time"].apply(time_code_to_bins)
+        print(df["Time_code"][5][0])
         save_folder = os.path.join(save_folder, get_year)
         if not os.path.exists(save_folder):
             #Here just incase directory is not set up
@@ -60,6 +63,7 @@ def generate_urls(years: list[int], months: list[int], base_url: str):
     for year in years:
         for month in months:
             yield f"{base_url}{year}/e-CALLISTO_{year}_{month:02d}.txt"
+    
 if __name__ == "__main__":
     save_folder: str = f"{os.getcwd()}\solar_data_folder\events_list"
     if not os.path.exists(save_folder):
