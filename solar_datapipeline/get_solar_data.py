@@ -71,33 +71,50 @@ def create_function_urls(date_code: int, stations: list[str]) -> list[str]:
     for station in stations:
         if "(" in station or "[" in station or "?" in station:
             continue
-        url: str = f"https://soleil.i4ds.ch/solarradio/qkl/{year}/{month:02d}/{day:02d}/{station}_{year}{month:02d}{day:02d}"
+        url: str = f"{base_url}{year}/{month:02d}/{day:02d}/{station}_{year}{month:02d}{day:02d}"
         urls.append(url)
     #Unfortunately, the URL format is not consistent, as the time code does always match the every 15 minute interval, varing by a couple minutes/seconds
     #So the url will be generated for the whole day, and the user will have to check the time code manually through a loop
     return urls
 
 def generate_timecode_urls(timecodes: str, url: str):
-    
-    pass
+    for timecode in timecodes:
+        try:
 
+            response = requests.get(url)  
+            if response.status_code == 200:
+                yield url
+            else:
+                continue
+        except Exception as e:
+            print(f"Error: {e}")
+
+def download_url(timecodes: list[str], base_url: str):
+    
+        for url in generate_timecode_urls(timecodes, base_url):
+            print(url)
+ 
 
 @timing
-def main() -> None:
-    cwd: str = os.getcwd()
-    base_url: str = "https://soleil.i4ds.ch/solarradio/qkl/" # "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto"
+def main():
+   
     year: int = 2024
     month:int = 1
-    if os.path.exists(f"{cwd}\solar_data_folder"):
+    if os.path.exists(f"{cwd}\solar_data_folder\solar_data_url"):
        df = get_event_list(year, month, cwd)
        for index, row in df.iterrows():
             
-            print(create_function_urls(row["Date"], row["Stations"]))
-            
+            urls: list[str] = create_function_urls(row["Date"], row["Stations"])
+            for url in urls:
+                download_url(row["Time_code"], url)
+
     else:
-        os.makedirs(f"{cwd}\solar_data_folder\solar_data")
-        print(f"{cwd}\solar_data_folder\solar_data created")
+        os.makedirs(f"{cwd}\solar_data_folder\solar_data_url")
+        print(f"{cwd}\solar_data_folder\solar_data_url created")
 if __name__ == "__main__":
+    cwd: str = os.getcwd()
+    base_url: str = "https://soleil.i4ds.ch/solarradio/qkl/" # "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto"
+
     main()
 
     
