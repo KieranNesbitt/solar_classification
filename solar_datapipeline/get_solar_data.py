@@ -63,7 +63,7 @@ def get_event_list(year: int, month: int, cwd: str) -> pd.DataFrame:
 #Example URL: "https://soleil.i4ds.ch/solarradio/qkl/2024/08/04/EGYPT-SpaceAgency_20240804_121501_01.fit.gz.png"
 def create_function_urls(date_code: int, stations: list[str]) -> list[str]:
     """
-    Generates URLs for the given year and month.
+    Generates base URLs for the given year and month.
     """
     #date_code: "YYYYMMDD" format
     year, month, day = date_code // 10000, (date_code // 100) % 100, date_code % 100
@@ -76,7 +76,9 @@ def create_function_urls(date_code: int, stations: list[str]) -> list[str]:
     #Unfortunately, the URL format is not consistent, as the time code does always match the every 15 minute interval, varing by a couple minutes/seconds
     #So the url will be generated for the whole day, and the user will have to check the time code manually through a loop
     return urls
+
 def generate_timecode_urls(timecodes: str, url: str):
+    
     pass
 
 
@@ -90,7 +92,7 @@ def main() -> None:
        df = get_event_list(year, month, cwd)
        for index, row in df.iterrows():
             
-            create_function_urls(row["Date"], row["Stations"])
+            print(create_function_urls(row["Date"], row["Stations"]))
             
     else:
         os.makedirs(f"{cwd}\solar_data_folder\solar_data")
