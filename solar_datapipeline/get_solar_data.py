@@ -114,8 +114,9 @@ def main():
 if __name__ == "__main__":
     cwd: str = os.getcwd()
     base_url: str = "https://soleil.i4ds.ch/solarradio/qkl/" # "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto"
-
-    main()
+    lookup_dic: pd.DataFrame = pd.read_csv(fr"{cwd}\solar_datapipeline\focuscode_lookup.csv", sep = ",", header=0)
+    print(lookup_dic[lookup_dic["Station Name"] == "GLASGOW"]["Two-Digit-Code"].to_list())
+    #main()
 
     
     
