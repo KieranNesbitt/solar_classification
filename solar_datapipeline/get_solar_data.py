@@ -103,7 +103,6 @@ def main():
        for index, row in df.iterrows():
             
             urls: list[str] = create_middle_url(row["Date"], row["Stations"], row["Time_code"])
-            print(urls)
     else:
         os.makedirs(f"{cwd}\solar_data_folder\solar_data_url")
         print(f"{cwd}\solar_data_folder\solar_data_url created")
