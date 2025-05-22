@@ -61,7 +61,7 @@ def get_event_list(year: int, month: int, cwd: str) -> pd.DataFrame:
 
 
 #Example URL: "https://soleil.i4ds.ch/solarradio/qkl/2024/08/04/EGYPT-SpaceAgency_20240804_121501_01.fit.gz.png"
-def create_middle_url(date_code: int, stations: list[str]) -> list[str]:
+def create_middle_url(date_code: int, stations: list[str], time_codes: list[str]) -> list[str]:
     """
     Generates base URLs for the given year and month.
     """
@@ -71,27 +71,26 @@ def create_middle_url(date_code: int, stations: list[str]) -> list[str]:
     for station in stations:
         if "(" in station or "[" in station or "?" in station:
             continue
-        url: str = f"{base_url}{year}/{month:02d}/{day:02d}/{station}_{year}{month:02d}{day:02d}"
-        urls.append(url)
+        middle_url: str = f"{base_url}{year}/{month:02d}/{day:02d}/{station}_{year}{month:02d}{day:02d}"
+        for final_url in generate_timecode_urls(middle_url, time_codes, station):
+            urls.append(final_url)
     #Unfortunately, the URL format is not consistent, as the time code does always match the every 15 minute interval, varing by a couple minutes/seconds
     #So the url will be generated for the whole day, and the user will have to check the time code manually through a loop
     return urls
 
-def generate_timecode_urls(timecodes: str, url: str, station_names: list[str]):
+def generate_timecode_urls(middle_url: str, timecodes: str, station_name: str):
+    focus_codes: list[str] = lookup_dic[lookup_dic["Station Name"] == station_name]["Two-Digit-Code"].to_list()
     for timecode in timecodes:
-        for station_name in station_names:
-           
-
-            try:
-
-                yield url
-                
-            except Exception as e:
-                print(f"Error: {e}")
+            for focus in focus_codes:
+                try:
+                    url_final: str = f"{middle_url}_{timecode}_{focus}.fit.gz.png"
+                    yield url_final 
+                except Exception as e:
+                    print(f"Error: {e}")
 
 def download_url(timecodes: list[str], base_url: str, station_names: str):
         for url in generate_timecode_urls(timecodes, base_url, station_names):
-            pass
+            print(url)
  
 
 @timing
@@ -103,10 +102,8 @@ def main():
        df = get_event_list(year, month, cwd)
        for index, row in df.iterrows():
             
-            urls: list[str] = create_middle_url(row["Date"], row["Stations"])
-            for url in urls:
-                download_url(row["Time_code"], url, row["Stations"])
-
+            urls: list[str] = create_middle_url(row["Date"], row["Stations"], row["Time_code"])
+            print(urls)
     else:
         os.makedirs(f"{cwd}\solar_data_folder\solar_data_url")
         print(f"{cwd}\solar_data_folder\solar_data_url created")
@@ -114,7 +111,7 @@ if __name__ == "__main__":
     cwd: str = os.getcwd()
     base_url: str = "https://soleil.i4ds.ch/solarradio/qkl/" # "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto"
     lookup_dic: pd.DataFrame = pd.read_csv(fr"{cwd}\solar_datapipeline\focuscode_lookup.csv", sep = ",", header=0)
-    #print(lookup_dic[lookup_dic["Station Name"] == "GLASGOW"]["Two-Digit-Code"].to_list())
+    #print(lookup_dic[lookup_dic["Station Name"] == "GLASGOW"]["Two-Digit-Code"].to_dict())
     main()
 
     
