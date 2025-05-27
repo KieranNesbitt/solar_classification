@@ -44,7 +44,7 @@ def download_file(url: str, save_path: str):
     except Exception as e:
         print(f"Error: {e}")
 
-def get_event_list(year: int, month: int, cwd: str) -> pd.DataFrame:
+def get_event_list(year: int, month: int, cwd: str, Type: None) -> pd.DataFrame:
     """
     Gets the event list based on the year and month provided.
     """
@@ -53,65 +53,54 @@ def get_event_list(year: int, month: int, cwd: str) -> pd.DataFrame:
     try:
         df: pd.DataFrame = pd.read_csv(file_path, comment="#", sep=',', on_bad_lines='skip', encoding="ISO-8859-1",
                          usecols=['Date', 'Type', "Stations", "Time_code"], converters={'Time_code': pd.eval, "Stations": convert_stations})
+        if Type is not None:
+            return df[df["Type"] == Type]
         return df
     except Exception as e:
         print(f"Error fetching event list: {e}")
 
         return pd.DataFrame()
-
-
-#Example URL: "https://soleil.i4ds.ch/solarradio/qkl/2024/08/04/EGYPT-SpaceAgency_20240804_121501_01.fit.gz.png"
-def create_middle_url(date_code: int, stations: list[str], time_codes: list[str]) -> list[str]:
-    """
-    Generates base URLs for the given year and month.
-    """
-    #date_code: "YYYYMMDD" format
-    year, month, day = date_code // 10000, (date_code // 100) % 100, date_code % 100
-    urls: list[str] = []
-    for station in stations:
-        if "(" in station or "[" in station or "?" in station:
-            continue
-        middle_url: str = f"{base_url}{year}/{month:02d}/{day:02d}/{station}_{year}{month:02d}{day:02d}"
-        for final_url in generate_timecode_urls(middle_url, time_codes, station):
-            urls.append(final_url)
-    #Unfortunately, the URL format is not consistent, as the time code does always match the every 15 minute interval, varing by a couple minutes/seconds
-    #So the url will be generated for the whole day, and the user will have to check the time code manually through a loop
-    return urls
-
-def generate_timecode_urls(middle_url: str, timecodes: str, station_name: str):
-    focus_codes: list[str] = lookup_dic[lookup_dic["Station Name"] == station_name]["Two-Digit-Code"].to_list()
-    for timecode in timecodes:
-            for focus in focus_codes:
-                try:
-                    url_final: str = f"{middle_url}_{timecode}_{focus}.fit.gz.png"
-                    yield url_final 
-                except Exception as e:
-                    print(f"Error: {e}")
-
-
-def download_url(timecodes: list[str], base_url: str, station_names: str):
-        for url in generate_timecode_urls(timecodes, base_url, station_names):
-            print(url)
-
 @timing
-def main():
-    from create_solardata_url import generate_all_image_urls
-    year: int = 2024
-    month:int = 1
-    if os.path.exists(f"{cwd}\solar_data_folder\solar_data_url"):
-       df = get_event_list(year, month, cwd)
-       for index, row in df.iterrows():
+def main(year: int = 2024, month: int = 1, Type: str = None):
+    output_dir = os.path.join(cwd, "solar_data_folder")
+    output_file_path = os.path.join(output_dir, "solar_data_url.txt") # Using .txt for plain text
+    
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print(f"Directory '{output_dir}' created.")
+    
+    events_list = get_event_list(year, month, cwd, Type)
+
+    # Open the file in write mode ('w') to overwrite existing content or create a new file
+    # If you want to append to the file, change 'w' to 'a'.
+    url_full = []
+    with open(output_file_path, 'w') as f:
+        print(f"Saving URLs to '{output_file_path}'...")
+        for index, row in events_list.iterrows():
+            # Ensure 'Stations' and 'Time_code' are treated as lists
+            stations_list = row["Stations"] if isinstance(row["Stations"], list) else [row["Stations"]]
+            time_codes_list = row["Time_code"] if isinstance(row["Time_code"], list) else [row["Time_code"]]
+
+            urls_generator = generate_all_image_urls(
+                row["Date"],
+                stations_list,
+                time_codes_list,
+                2,
+                base_url 
+            )
             
-            urls= list(generate_all_image_urls(row["Date"], row["Stations"], row["Time_code"], 2, base_url))
-            
-    else:
-        os.makedirs(f"{cwd}\solar_data_folder\solar_data_url")
-        print(f"{cwd}\solar_data_folder\solar_data_url created")
+            # Iterate directly over the generator and write each URL to the file
+            for url in urls_generator:
+                url_full.append(url)
+        url_df = pd.DataFrame(url_full)
+        url_df.to_csv(output_file_path, index=False, header=None)
+
 if __name__ == "__main__":
+    from create_solardata_url import generate_all_image_urls
     cwd: str = os.getcwd()
     base_url: str = "https://soleil.i4ds.ch/solarradio/qkl/" # "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto"
     lookup_dic: pd.DataFrame = pd.read_csv(fr"{cwd}\solar_datapipeline\focuscode_lookup.csv", sep = ",", header=0)
-    main()
+    main(Type = "II")
 
     
     
