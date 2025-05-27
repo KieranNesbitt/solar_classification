@@ -88,21 +88,22 @@ def generate_timecode_urls(middle_url: str, timecodes: str, station_name: str):
                 except Exception as e:
                     print(f"Error: {e}")
 
+
 def download_url(timecodes: list[str], base_url: str, station_names: str):
         for url in generate_timecode_urls(timecodes, base_url, station_names):
             print(url)
- 
 
 @timing
 def main():
-   
+    from create_solardata_url import generate_all_image_urls
     year: int = 2024
     month:int = 1
     if os.path.exists(f"{cwd}\solar_data_folder\solar_data_url"):
        df = get_event_list(year, month, cwd)
        for index, row in df.iterrows():
             
-            urls: list[str] = create_middle_url(row["Date"], row["Stations"], row["Time_code"])
+            urls= list(generate_all_image_urls(row["Date"], row["Stations"], row["Time_code"], 2, base_url))
+            
     else:
         os.makedirs(f"{cwd}\solar_data_folder\solar_data_url")
         print(f"{cwd}\solar_data_folder\solar_data_url created")
@@ -110,7 +111,6 @@ if __name__ == "__main__":
     cwd: str = os.getcwd()
     base_url: str = "https://soleil.i4ds.ch/solarradio/qkl/" # "http://soleil80.cs.technik.fhnw.ch/solarradio/data/2002-20yy_Callisto"
     lookup_dic: pd.DataFrame = pd.read_csv(fr"{cwd}\solar_datapipeline\focuscode_lookup.csv", sep = ",", header=0)
-    #print(lookup_dic[lookup_dic["Station Name"] == "GLASGOW"]["Two-Digit-Code"].to_dict())
     main()
 
     
